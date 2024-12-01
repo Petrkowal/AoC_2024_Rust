@@ -1,4 +1,4 @@
-# Advent of code 2024
+<h1 align="center">Advent of Code</h1>
 
 <!-- AOC TILES BEGIN -->
 <h1 align="center">
