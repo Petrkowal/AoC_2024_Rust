@@ -20,9 +20,9 @@ const TEST: &str = "\
 fn main() -> Result<()> {
     start_day(DAY);
 
-    fn load_data<R: BufRead>(reader: R) -> Result<(Vec<i32>, Vec<i32>)> {
-        let mut left_list: Vec<i32> = Vec::new();
-        let mut right_list: Vec<i32> = Vec::new();
+    fn load_data<R: BufRead>(reader: R) -> Result<(Vec<usize>, Vec<usize>)> {
+        let mut left_list: Vec<usize> = Vec::new();
+        let mut right_list: Vec<usize> = Vec::new();
 
         for line in reader.lines() {
             let line = line?;
@@ -43,12 +43,7 @@ fn main() -> Result<()> {
         left_list.sort();
         right_list.sort();
 
-        let mut distance = 0;
-        for i in 0..left_list.len() {
-            distance += (left_list[i] - right_list[i]).abs();
-        }
-
-        Ok(distance as usize)
+        Ok(left_list.iter().zip(right_list).map(|(left, right)| if left > &right { left - right } else { right - left }).sum())
     }
 
     assert_eq!(11, part1(BufReader::new(TEST.as_bytes()))?);
@@ -64,11 +59,8 @@ fn main() -> Result<()> {
     fn part2<R: BufRead>(reader: R) -> Result<usize> {
         let (left_list, right_list) = load_data(reader)?;
 
-        let similarity_score: i32 = left_list.iter()
-            .map(|left| left * right_list.iter().filter(|&&right| right == *left).count() as i32)
-            .sum();
 
-        Ok(similarity_score as usize)
+        Ok(left_list.iter().map(|left| left * right_list.iter().filter(|&&right| right == *left).count()).sum())
     }
 
     assert_eq!(31, part2(BufReader::new(TEST.as_bytes()))?);
