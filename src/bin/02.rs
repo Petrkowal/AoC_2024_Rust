@@ -5,7 +5,7 @@ use code_timing_macros::time_snippet;
 use const_format::concatcp;
 use adv_code_2024::*;
 
-const DAY: &str = "02"; // TODO: Fill the day
+const DAY: &str = "02";
 const INPUT_FILE: &str = concatcp!("input/", DAY, ".txt");
 
 const TEST: &str = "\
@@ -15,7 +15,7 @@ const TEST: &str = "\
 1 3 2 4 5
 8 6 4 4 1
 1 3 6 7 9\
-"; // TODO: Add the test input
+";
 
 ///This example data contains six reports each containing five levels.
 //
@@ -48,6 +48,7 @@ const TEST: &str = "\
 // Thanks to the Problem Dampener, 4 reports are actually safe!
 // 
 // Update your analysis by handling situations where the Problem Dampener can remove a single level from unsafe reports. How many reports are now safe?
+
 fn main() -> Result<()> {
     start_day(DAY);
 
@@ -55,41 +56,9 @@ fn main() -> Result<()> {
     println!("=== Part 1 ===");
 
     fn part1<R: BufRead>(reader: R) -> Result<usize> {
-        let mut count = 0;
-        for line in reader.lines() {
-            let mut increasing = false;
-            let mut decreasing = false;
-            let mut is_unsafe = false;
-            let line = line?;
-            let mut parts = line.split_whitespace();
-            let mut levels: Vec<i32> = Vec::new();
-            while let Some(part) = parts.next() {
-                levels.push(part.parse().unwrap());
-            }
-            // print!("{:?}", levels);
-            for i in 0..levels.len() - 1 {
-                if levels[i] < levels[i + 1] {
-                    increasing = true;
-                } else if levels[i] > levels[i + 1] {
-                    decreasing = true;
-                }
-                if (levels[i] - levels[i + 1]).abs() > 3 || levels[i] == levels[i + 1] {
-                    is_unsafe = true;
-                }
-            }
-            if increasing && decreasing {
-                is_unsafe = true;
-            }
-            if !is_unsafe {
-                count += 1;
-            }
-            // println!(" is {}safe", if is_unsafe { "un" } else { "" });
-        }
-
-        Ok(count)
+        Ok(reader.lines().filter_map(Result::ok).map(|line| line.split_whitespace().map(|s| s.parse::<i32>().unwrap()).collect::<Vec<_>>()).filter(|levels| levels.windows(2).all(|w| (w[0] - w[1]).abs() <= 3 && w[0] != w[1]) && (levels.windows(2).all(|w| w[0] < w[1]) || levels.windows(2).all(|w| w[0] > w[1]))).count())
     }
 
-    // TODO: Set the expected answer for the test input
     assert_eq!(2, part1(BufReader::new(TEST.as_bytes()))?);
 
     let input_file = BufReader::new(File::open(INPUT_FILE)?);
@@ -101,7 +70,6 @@ fn main() -> Result<()> {
     println!("\n=== Part 2 ===");
 
     fn part2<R: BufRead>(reader: R) -> Result<usize> {
-        // if removing a single level from an unsafe report would make it safe, the report instead counts as safe.
         let mut count: usize = 0;
         for line in reader.lines() {
             let line = line?;
@@ -111,23 +79,23 @@ fn main() -> Result<()> {
                 levels.push(part.parse().unwrap());
             }
             print!("{:?}", levels);
-
+        
             let mut any_safe = false;
             for j in 0..levels.len() {
                 let mut increasing = false;
                 let mut decreasing = false;
                 let mut is_unsafe = false;
-                
+        
                 for i in 0..levels.len() - 1 {
                     if i == j {
-                        continue
+                        continue;
                     }
                     let mut plus_one = 0;
-                    if i+1 == j {
+                    if i + 1 == j {
                         plus_one = 1;
                     }
                     if (i + 1 + plus_one) >= levels.len() {
-                        continue
+                        continue;
                     }
                     if levels[i] < levels[i + 1 + plus_one] {
                         increasing = true;
@@ -151,7 +119,7 @@ fn main() -> Result<()> {
             }
             println!(" is {}safe", if any_safe { "" } else { "un" });
         }
-
+        
         Ok(count)
     }
 
