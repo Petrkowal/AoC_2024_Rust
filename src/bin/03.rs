@@ -52,32 +52,24 @@ fn main() -> Result<()> {
         let do_re = Regex::new(r"do\(\)").unwrap();
         let dont_re = Regex::new(r"don't\(\)").unwrap();
 
-        let mut sum = 0;
-        let mut mul_enabled = true;
+        let input = reader.lines().flatten().collect::<String>();
 
-        let whole_string = reader.lines().flatten().collect::<String>();
         let mut matches = vec![];
+        matches.extend(mul_re.captures_iter(&input).map(|cap| (cap.get(0).unwrap().start(), "mul", cap)));
+        matches.extend(do_re.captures_iter(&input).map(|cap| (cap.get(0).unwrap().start(), "do", cap)));
+        matches.extend(dont_re.captures_iter(&input).map(|cap| (cap.get(0).unwrap().start(), "don't", cap)));
 
-        matches.push(mul_re.captures_iter(&whole_string));
-        matches.push(do_re.captures_iter(&whole_string));
-        matches.push(dont_re.captures_iter(&whole_string));
+        matches.sort_by_key(|(pos, _, _)| *pos);
 
-        let matches = matches.into_iter().flatten().sorted_by_key(|cap| cap.get(0).unwrap().start());
-
-        for cap in matches {
-            match cap.get(0).unwrap().as_str() {
-                "do()" => mul_enabled = true,
-                "don't()" => mul_enabled = false,
-                _ => {
-                    if !mul_enabled {
-                        continue;
-                    }
-                    let x: usize = cap[1].parse().unwrap();
-                    let y: usize = cap[2].parse().unwrap();
-                    sum += x * y;
-                }
+        let mut mul_enabled = true;
+        let sum: usize = matches.into_iter().fold(0, |acc, (_, kind, cap)| {
+            match kind {
+                "mul" if mul_enabled => acc + cap[1].parse::<usize>().unwrap() * cap[2].parse::<usize>().unwrap(),
+                "do" => { mul_enabled = true; acc },
+                "don't" => { mul_enabled = false; acc },
+                _ => acc,
             }
-        }
+        });
 
         Ok(sum)
     }
