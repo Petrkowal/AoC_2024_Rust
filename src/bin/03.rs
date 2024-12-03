@@ -21,13 +21,11 @@ fn main() -> Result<()> {
     println!("=== Part 1 ===");
 
     fn part1<R: BufRead>(reader: R) -> Result<usize> {
-        let re = regex::Regex::new(r"mul\((\d+),(\d+)\)").unwrap();
-
         Ok(reader
             .lines()
             .flatten()
             .map(|line| {
-                re.captures_iter(&line)
+                Regex::new(r"mul\((\d+),(\d+)\)").unwrap().captures_iter(&line)
                     .map(|cap| {
                         let x: usize = cap[1].parse().unwrap();
                         let y: usize = cap[2].parse().unwrap();
@@ -65,8 +63,14 @@ fn main() -> Result<()> {
         let sum: usize = matches.into_iter().fold(0, |acc, (_, kind, cap)| {
             match kind {
                 "mul" if mul_enabled => acc + cap[1].parse::<usize>().unwrap() * cap[2].parse::<usize>().unwrap(),
-                "do" => { mul_enabled = true; acc },
-                "don't" => { mul_enabled = false; acc },
+                "do" => {
+                    mul_enabled = true;
+                    acc
+                }
+                "don't" => {
+                    mul_enabled = false;
+                    acc
+                }
                 _ => acc,
             }
         });
