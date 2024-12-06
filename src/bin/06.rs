@@ -59,13 +59,11 @@ fn main() -> Result<()> {
             }
             visited.push((pos, dir));
             if maze[next_pos.0][next_pos.1] == '#' {
-                // Turn right
                 dir = (dir + 1) % 4;
                 continue;
             }
 
             pos = next_pos;
-            // check if pos in bounds
         }
         false
     }
@@ -76,8 +74,6 @@ fn main() -> Result<()> {
             .flatten()
             .map(|l| l.chars().collect())
             .collect();
-        // pos = '^'
-        // dir = 'N'
 
         let mut pos: (usize, usize) = (10000, 10000);
         for i in 0..maze.len() {
@@ -106,12 +102,10 @@ fn main() -> Result<()> {
                 break;
             }
             if maze[next_pos.0][next_pos.1] == '#' {
-                // Turn right
                 dir = (dir + 1) % 4;
                 continue;
             }
             pos = next_pos;
-            // check if pos in bounds
         }
 
         let mut count = 0;
@@ -142,9 +136,7 @@ fn main() -> Result<()> {
             .flatten()
             .map(|l| l.chars().collect())
             .collect();
-        // pos = '^'
-        // dir = 'N'
-
+        
         let mut pos: (usize, usize) = (10000, 10000);
         for i in 0..maze.len() {
             for j in 0..maze[0].len() {
