@@ -165,7 +165,7 @@ fn main() -> Result<()> {
                 maze_copy[i][j] = '#';
                 let done_count = i * maze[i].len() + j;
                 let total_count = maze.len() * maze[0].len();
-                println!("Progress: {}/{}", done_count, total_count);
+                println!("Progress: {}|{}", done_count, total_count);
                 if has_loop(maze_copy, pos, dir) {
                     count += 1;
                 }
